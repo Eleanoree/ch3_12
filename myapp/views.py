@@ -4,6 +4,8 @@ from myapp.models import *
 from django.forms.models import model_to_dict
 from django.db.models import Q
 from django.core.paginator import Paginator
+from django.http import JsonResponse
+
 
 def search_list(request):
     if 'cname' in request.GET:
@@ -162,3 +164,30 @@ def delete(request,id):
         obj_data = students.objects.get(cid = id)
         print(model_to_dict(obj_data))       
         return render(request,'delete.html',{'obj_data':obj_data})
+    
+def getAllItems(request):
+    resultObject = students.objects.all().order_by('cid')
+    # print(type(resultObject))
+    # for item in resultObject:
+    #    # print(model_to_dict(item))
+    #     print(type(item))
+
+    resultList = list(resultObject.values())    #將"QuerySet ,元素為Object" 轉成"list 元素為dict" 的型態
+    # print(type(resultList))
+    # for item in resultList:
+    #     # print(model_to_dict(item))
+    #     print(type(item))
+
+    # return HttpResponse("Hello")
+    return JsonResponse(resultList, safe=False)     #safe=True 只允許傳入dict ; safe=False只允許傳入非dict
+
+def getItem(request, id):
+    try:
+        obj = students.objects.get(cid=id)
+        # print(model_to_dict(obj))
+        resultDict = model_to_dict(obj)     #將 object 轉成 dict
+        # return HttpResponse("Hello")
+        return JsonResponse(resultDict, safe=False)
+    except:
+        # return HttpResponse("False")
+        return JsonResponse({"error":"Item not found"},status=404)

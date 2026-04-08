@@ -226,9 +226,9 @@ def createItem(request):
         return JsonResponse({"error":"Item not found"},status=404)
 
 #停止csrf驗證，讓外部程式也能呼叫這個API
-@csrf_exempt   
+@csrf_exempt
 def updateItem(request, id):
-    print(f"id = {id}")
+    print(f"id={id}")
     try:
         if request.method == "GET":
             cname = request.GET['cname']
@@ -237,21 +237,8 @@ def updateItem(request, id):
             cemail = request.GET['cemail']
             cphone = request.GET['cphone']
             caddr = request.GET['caddr']
-            print(f"GET data : cname={cname}, csex={csex}, cbirthday={cbirthday}, cemail={cemail}, cphone={cphone}, caddr={caddr}")        
+            print(f"GET data: cname={cname}, csex={csex}, cbirthday={cbirthday}, cemail={cemail}, cphone={cphone}, caddr={caddr}")
             # return HttpResponse("get....")
-            try:
-                #orm
-                update = students.objects.get(cid=id)
-                update.cname = cname
-                update.csex = csex
-                update.cbirthday = cbirthday
-                update.cemail = cemail
-                update.cphone = cphone
-                update.caddr = caddr
-                update.save()
-                return JsonResponse({"message" : "Item update successfully"}, status=200)
-            except:
-                return JsonResponse({"error":"Failed to create item"}, status=500)
         elif request.method == "POST":
             cname = request.POST['cname']
             csex = request.POST['csex']
@@ -259,9 +246,21 @@ def updateItem(request, id):
             cemail = request.POST['cemail']
             cphone = request.POST['cphone']
             caddr = request.POST['caddr']
-            print(f"POST data : cname={cname}, csex={csex}, cbirthday={cbirthday}, cemail={cemail}, cphone={cphone}, caddr={caddr}")        
-            return HttpResponse("post...")
-        
-        return HttpResponse("Hello")
+            print(f"POST data: cname={cname}, csex={csex}, cbirthday={cbirthday}, cemail={cemail}, cphone={cphone}, caddr={caddr}")
+            # return HttpResponse("post....")
+        try:
+            #orm
+            update = students.objects.get(cid=id)
+            update.cname = cname
+            update.csex = csex
+            update.cbirthday = cbirthday
+            update.cemail = cemail  
+            update.cphone = cphone
+            update.caddr = caddr
+            update.save()
+            return JsonResponse({"message": "Item updated successfully"}, status=200)
+        except:
+            return JsonResponse({"error": "Failed to update item"}, status=500)
     except:
-        return JsonResponse({"error":"Invalid data"},status=400)
+        return JsonResponse({"error": "Invalid data"}, status=400)      
+
